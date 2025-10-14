@@ -1,21 +1,448 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ContextAlert from '../components/ContextAlert.astro';
-import Markdown from '../components/Markdown.astro';
 
-const explainer = `
-An Astro website can go way beyond static pages - on the right platform.
+const pilares = [
+    {
+        titulo: 'Edición inteligente de fotografías',
+        descripcion:
+            'Ajustes automáticos con IA, capas no destructivas y control granular de color, luz y textura con herramientas inspiradas en Capture One y Lightroom.'
+    },
+    {
+        titulo: 'Montaje de video integrado',
+        descripcion:
+            'Línea de tiempo rápida, plantillas para reels, estabilización inteligente y exportaciones optimizadas para redes sociales, web o cine.'
+    },
+    {
+        titulo: 'Inspiración y planificación',
+        descripcion:
+            'Generador de guiones visuales, localizador de spots con realidad aumentada y moodboards colaborativos que sincronizan web y app móvil.'
+    },
+    {
+        titulo: 'Flujo profesional de entrega',
+        descripcion:
+            'Galerías privadas con feedback, licencias automatizadas y publicación directa en sitios, redes y servicios de impresión.'
+    }
+];
 
-Netlify supports not only [Streaming SSR](https://docs.astro.build/en/guides/server-side-rendering/#html-streaming) and fast [Edge Middleware](https://docs.astro.build/en/guides/middleware/), but also [on-demand revalidation](https://www.netlify.com/blog/cache-tags-and-purge-api-on-netlify/) and [stale-while-revalidate](https://www.netlify.com/blog/swr-and-fine-grained-cache-control/). 
-Any page or data can be rebuilt only when needed, without site visitors ever getting a performance hit.
-`;
+const appsRecomendadas = [
+    {
+        nombre: 'Adobe Lightroom Classic',
+        especialidad: 'Revelado RAW integral',
+        puntosClave: ['Sincronización cloud', 'Curva de tonos avanzada', 'Integración con Photoshop']
+    },
+    {
+        nombre: 'Capture One Pro',
+        especialidad: 'Colorimetría de precisión',
+        puntosClave: ['Tethering profesional', 'Edición por capas', 'Perfilado de cámaras']
+    },
+    {
+        nombre: 'Affinity Photo 2',
+        especialidad: 'Retoque de alto nivel',
+        puntosClave: ['Pago único', 'Herramientas de composición', 'Compatibilidad PSD']
+    },
+    {
+        nombre: 'DaVinci Resolve Studio',
+        especialidad: 'Video y color de cine',
+        puntosClave: ['Corrección nodal', 'Fairlight audio', 'Fusion VFX']
+    }
+];
+
+const ideasCreativas = [
+    {
+        titulo: 'Retratos editoriales',
+        detalle: 'Diagramas de iluminación con geles complementarios y guion técnico descargable.'
+    },
+    {
+        titulo: 'Series documentales 9:16',
+        detalle: 'Plantillas de guion con ProRes, LUT móviles y workflows para redes sociales.'
+    },
+    {
+        titulo: 'Timelapses híbridos',
+        detalle: 'Secuencias foto + video con intervalos inteligentes y panel de interpolación.'
+    },
+    {
+        titulo: 'Gastronomía 3D',
+        detalle: 'Fondos texturizados con AR, recetas de iluminación continua y biblioteca de props.'
+    },
+    {
+        titulo: 'Memorias familiares',
+        detalle: 'Captura instantánea digitalizada, presets análogos y automatización de álbumes.'
+    }
+];
+
+const pasosFlujo = [
+    {
+        titulo: '1. Preproducción estratégica',
+        texto: 'Brief colaborativo, guiones visuales y checklist dinámico sincronizado entre la web y la app.'
+    },
+    {
+        titulo: '2. Captura guiada',
+        texto: 'Overlays de composición, histograma en vivo y control remoto de cámara desde la app móvil.'
+    },
+    {
+        titulo: '3. Edición y montaje',
+        texto: 'Presets adaptativos, clonación inteligente, montaje de video con audio libre de derechos integrado.'
+    },
+    {
+        titulo: '4. Entrega y monetización',
+        texto: 'Galerías privadas con feedback puntual, licencias automáticas y pasarela para impresiones premium.'
+    }
+];
+
+const preguntasFrecuentes = [
+    {
+        pregunta: '¿La app móvil y la versión web comparten bibliotecas?',
+        respuesta:
+            'Sí. Todo el catálogo se sincroniza mediante colecciones inteligentes con respaldo cifrado en la nube y opciones de guardado local.'
+    },
+    {
+        pregunta: '¿Qué requisitos necesita el editor para video 6K?',
+        respuesta:
+            'Se recomienda GPU con 6 GB VRAM, 32 GB de RAM y almacenamiento NVMe. La app ajusta automáticamente la calidad de previsualización para mantener la fluidez.'
+    },
+    {
+        pregunta: '¿Puedo trabajar sin conexión?',
+        respuesta:
+            'La app móvil descarga los proyectos seleccionados, permite la edición offline y sincroniza cambios apenas recupera conexión.'
+    }
+];
+
+const metricas = [
+    { valor: '120K+', etiqueta: 'Sesiones sincronizadas cada mes' },
+    { valor: '30%', etiqueta: 'Tiempo ahorrado en revelado y edición' },
+    { valor: '90/100', etiqueta: 'Índice de satisfacción de clientes creativos' }
+];
+
+const testimonios = [
+    {
+        nombre: 'Elena Duarte',
+        rol: 'Directora de fotografía en Nébula Films',
+        cita:
+            'En una misma semana entregamos campañas para tres marcas globales. El control de color unificado y las galerías con feedback aceleraron toda la producción.'
+    },
+    {
+        nombre: 'Luis Cabrera',
+        rol: 'Fotógrafo editorial freelance',
+        cita:
+            'Los presets adaptativos me ahorran horas. Puedo disparar tethered en estudio y terminar en el tren camino a casa sin perder calidad.'
+    },
+    {
+        nombre: 'Mariana Torres',
+        rol: 'Creadora de contenido gastronómico',
+        cita:
+            'Las plantillas de montaje vertical y los recursos educativos integrados me permiten lanzar tres recetas semanales sin estrés.'
+    }
+];
+
+const recursosAprendizaje = [
+    {
+        titulo: 'Guía de color cinematográfico',
+        tipo: 'E-book interactivo',
+        enlace: '#',
+        descripcion: 'Aprende a construir paletas coherentes con nodos, LUTs y curvas logarítmicas.'
+    },
+    {
+        titulo: 'Workshop de iluminación híbrida',
+        tipo: 'Sesión en vivo',
+        enlace: '#',
+        descripcion: 'Domina configuraciones con luz continua y strobes sincronizados desde la app móvil.'
+    },
+    {
+        titulo: 'Plantillas de guion visual',
+        tipo: 'Kit descargable',
+        enlace: '#',
+        descripcion: 'Storyboards, shot lists y moodboards editables listos para tus producciones.'
+    }
+];
+
+const planes = [
+    {
+        nombre: 'Starter',
+        precio: 'US$0',
+        descripcion: 'Ideal para creadores individuales que comienzan a profesionalizar su workflow.',
+        incluye: ['200 GB cifrados', 'Presets inteligentes básicos', 'Exportaciones HD ilimitadas'],
+        cta: 'Crear cuenta gratuita'
+    },
+    {
+        nombre: 'Pro Studio',
+        precio: 'US$29',
+        destacado: true,
+        descripcion: 'Equipos de producción que necesitan coordinación en tiempo real y video avanzado.',
+        incluye: ['5 TB compartidos', 'Video 6K multicámara', 'Automatizaciones con scripts', 'Soporte prioritario 24/7'],
+        cta: 'Probar Pro Studio'
+    },
+    {
+        nombre: 'Enterprise',
+        precio: 'Habla con nosotros',
+        descripcion: 'Para agencias y estudios que requieren integraciones a medida y SSO corporativo.',
+        incluye: ['Almacenamiento dedicado', 'Integración DAM/CRM', 'SLAs personalizados'],
+        cta: 'Agendar una demo'
+    }
+];
 ---
 
-<Layout title="Welcome to Astro.">
-    <ContextAlert class="mb-8" />
-    <h1 class="mb-10">Netlify Platform Starter for Astro</h1>
-    <Markdown content={explainer} class="mb-10 text-lg" />
-    <p>
-        <a href="https://docs.netlify.com/frameworks/astro/" class="btn btn-lg sm:min-w-64">Read the Docs</a>
-    </p>
+<Layout title="LumenForge — Ecosistema creativo de fotografía y video">
+    <section class="grid gap-12 pt-8 pb-16 md:grid-cols-[1.1fr_0.9fr] md:items-center">
+        <div class="space-y-6">
+            <p class="inline-flex items-center gap-2 px-3 py-1 text-sm font-semibold tracking-wide uppercase rounded-full bg-primary/20 text-primary">
+                Fotografía + Video + IA
+            </p>
+            <h1 class="text-4xl font-bold sm:text-5xl">LumenForge: tu laboratorio creativo total</h1>
+            <p class="text-lg text-white/80">
+                Una plataforma web y app móvil con todo lo que necesitas para planificar, capturar, editar y publicar historias visuales memorables. Inspirada en las mejores suites profesionales, diseñada para flujos ágiles y colaborativos.
+            </p>
+            <div class="flex flex-wrap gap-4">
+                <a href="#app" class="btn btn-lg">Descargar la app</a>
+                <a href="#caracteristicas" class="btn btn-lg bg-white/10 text-white hover:bg-white/20">Explorar funciones</a>
+            </div>
+            <p class="text-sm text-white/70">
+                Disponible para iOS, Android, macOS y navegadores modernos. Sincronización en tiempo real y respaldo cifrado incluido.
+            </p>
+            <dl class="grid gap-6 pt-6 sm:grid-cols-3">
+                {metricas.map((metrica) => (
+                    <div>
+                        <dt class="text-sm uppercase tracking-wide text-white/60">{metrica.etiqueta}</dt>
+                        <dd class="mt-2 text-2xl font-semibold text-white">{metrica.valor}</dd>
+                    </div>
+                ))}
+            </dl>
+        </div>
+        <div class="p-6 space-y-4 rounded-3xl bg-white/10 backdrop-blur">
+            <h2 class="text-2xl font-semibold">Panel modular</h2>
+            <ul class="space-y-3 text-white/80">
+                <li class="flex items-start gap-3">
+                    <span class="flex items-center justify-center w-8 h-8 text-sm font-bold rounded-full bg-primary/80 text-primary-content">1</span>
+                    Preajustes con aprendizaje automático que se adaptan a cada sesión y optimizan la exposición.
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="flex items-center justify-center w-8 h-8 text-sm font-bold rounded-full bg-primary/80 text-primary-content">2</span>
+                    Mixer de color cinematográfico con comparación en vivo y soporte LUT.
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="flex items-center justify-center w-8 h-8 text-sm font-bold rounded-full bg-primary/80 text-primary-content">3</span>
+                    Exportaciones inteligentes con perfiles optimizados para redes, impresión fine art y DCP.
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="caracteristicas" class="py-16 border-t border-white/10">
+        <div class="space-y-8">
+            <h2 class="text-3xl font-bold">Pilares que combinan lo mejor del mercado</h2>
+            <p class="text-white/80">
+                Después de analizar a profundidad suites como Lightroom, Capture One, Affinity Photo, LumaFusion y DaVinci Resolve, diseñamos un ecosistema que fusiona sus fortalezas y elimina la fricción entre foto y video.
+            </p>
+            <div class="grid gap-8 sm:grid-cols-2">
+                {pilares.map((pilar) => (
+                    <article class="p-6 transition rounded-2xl bg-white/5 hover:bg-white/10">
+                        <h3 class="mb-3 text-xl font-semibold">{pilar.titulo}</h3>
+                        <p class="text-white/75">{pilar.descripcion}</p>
+                    </article>
+                ))}
+            </div>
+        </div>
+    </section>
+
+    <section id="app" class="py-16 border-t border-white/10">
+        <div class="grid gap-10 md:grid-cols-2 md:items-start">
+            <div class="space-y-6">
+                <h2 class="text-3xl font-bold">App móvil + Web Studio</h2>
+                <p class="text-white/80">
+                    La app guía la captura en campo, sincroniza ajustes y permite comenzar la edición inmediata desde el dispositivo. El estudio web amplía el potencial con motores de revelado RAW y montajes multicámara.
+                </p>
+                <ul class="space-y-4 text-white/80">
+                    <li>
+                        <strong class="text-white">Capas universales:</strong> Cualquier ajuste realizado en la app se refleja en el estudio web con historial versionado.
+                    </li>
+                    <li>
+                        <strong class="text-white">Bibliotecas inteligentes:</strong> Etiquetado automático con IA, detección de rostros y búsqueda por estilo visual.
+                    </li>
+                    <li>
+                        <strong class="text-white">Colaboración fluida:</strong> Comentarios con marcas en el fotograma, aprobaciones y exportación directa a clientes o redes.
+                    </li>
+                </ul>
+            </div>
+            <div class="space-y-6">
+                <div class="p-6 rounded-3xl bg-white/10">
+                    <h3 class="text-xl font-semibold">Edición móvil sin límites</h3>
+                    <p class="mt-3 text-white/75">
+                        Motor RAW optimizado, compatibilidad con archivos HEIF y ProRAW, curvas personalizadas y herramientas de clonación avanzadas.
+                    </p>
+                </div>
+                <div class="p-6 rounded-3xl bg-white/10">
+                    <h3 class="text-xl font-semibold">Estudio web colaborativo</h3>
+                    <p class="mt-3 text-white/75">
+                        Dashboards para equipos, control de versiones, automatización con scripts y exportación programada a servicios de impresión.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="comparativa" class="py-16 border-t border-white/10">
+        <div class="grid gap-8 lg:grid-cols-[1fr_1.2fr] lg:items-center">
+            <div class="space-y-4">
+                <h2 class="text-3xl font-bold">Ideas creativas listas para producir</h2>
+                <p class="text-white/80">
+                    Cada propuesta incluye checklist de equipo, esquema de iluminación, presets recomendados y plantillas de montaje que se sincronizan con tus proyectos.
+                </p>
+            </div>
+            <ul class="grid gap-4">
+                {ideasCreativas.map((idea) => (
+                    <li class="p-4 transition rounded-2xl bg-white/5 text-white/80 hover:bg-white/10">
+                        <h3 class="text-lg font-semibold text-white">{idea.titulo}</h3>
+                        <p class="mt-2 text-sm text-white/70">{idea.detalle}</p>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    </section>
+
+    <section id="apps" class="py-16 border-t border-white/10">
+        <h2 class="mb-6 text-3xl font-bold">Comparativa de aplicaciones destacadas</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-left text-white/80">
+                <thead class="text-sm uppercase text-white/60">
+                    <tr>
+                        <th class="px-4 py-3">Aplicación</th>
+                        <th class="px-4 py-3">Especialidad</th>
+                        <th class="px-4 py-3">Puntos clave</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/10">
+                    {appsRecomendadas.map((app) => (
+                        <tr class="bg-white/5">
+                            <td class="px-4 py-4 font-semibold text-white">{app.nombre}</td>
+                            <td class="px-4 py-4">{app.especialidad}</td>
+                            <td class="px-4 py-4">
+                                <ul class="space-y-1 list-disc list-inside">
+                                    {app.puntosClave.map((punto) => (
+                                        <li>{punto}</li>
+                                    ))}
+                                </ul>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+        <p class="mt-4 text-sm text-white/60">
+            LumenForge toma las mejores prácticas de estas herramientas y las integra en una experiencia unificada, sin suscripciones fragmentadas.
+        </p>
+    </section>
+
+    <section class="py-16 border-t border-white/10">
+        <div class="space-y-6">
+            <h2 class="text-3xl font-bold">Flujo de trabajo completo</h2>
+            <div class="grid gap-6 md:grid-cols-2">
+                {pasosFlujo.map((paso) => (
+                    <article class="p-5 rounded-2xl bg-white/5">
+                        <h3 class="text-xl font-semibold text-white">{paso.titulo}</h3>
+                        <p class="mt-3 text-white/75">{paso.texto}</p>
+                    </article>
+                ))}
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonios" class="py-16 border-t border-white/10">
+        <div class="space-y-6">
+            <h2 class="text-3xl font-bold">Historias de creadores que ya confían en LumenForge</h2>
+            <div class="grid gap-6 md:grid-cols-3">
+                {testimonios.map((testimonio) => (
+                    <figure class="p-6 rounded-3xl bg-white/5">
+                        <blockquote class="text-white/80">“{testimonio.cita}”</blockquote>
+                        <figcaption class="mt-4 text-sm text-white/60">
+                            <span class="block font-semibold text-white">{testimonio.nombre}</span>
+                            {testimonio.rol}
+                        </figcaption>
+                    </figure>
+                ))}
+            </div>
+        </div>
+    </section>
+
+    <section id="recursos" class="py-16 border-t border-white/10">
+        <div class="space-y-6">
+            <h2 class="text-3xl font-bold">Aprende, experimenta y lidera tus producciones</h2>
+            <div class="grid gap-6 md:grid-cols-3">
+                {recursosAprendizaje.map((recurso) => (
+                    <article class="p-6 transition rounded-3xl bg-white/5 hover:bg-white/10">
+                        <p class="text-xs font-semibold tracking-wide uppercase text-primary">{recurso.tipo}</p>
+                        <h3 class="mt-2 text-xl font-semibold text-white">{recurso.titulo}</h3>
+                        <p class="mt-3 text-white/70">{recurso.descripcion}</p>
+                        <a href={recurso.enlace} class="inline-flex items-center mt-4 text-sm font-semibold text-primary">
+                            Explorar recurso
+                            <span aria-hidden="true" class="ml-2">→</span>
+                        </a>
+                    </article>
+                ))}
+            </div>
+        </div>
+    </section>
+
+    <section id="preguntas" class="py-16 border-t border-white/10">
+        <div class="space-y-8">
+            <h2 class="text-3xl font-bold">Preguntas frecuentes</h2>
+            <div class="space-y-4">
+                {preguntasFrecuentes.map((item) => (
+                    <details class="p-5 rounded-2xl bg-white/5">
+                        <summary class="text-lg font-semibold cursor-pointer text-white">{item.pregunta}</summary>
+                        <p class="mt-3 text-white/75">{item.respuesta}</p>
+                    </details>
+                ))}
+            </div>
+        </div>
+    </section>
+
+    <section id="planes" class="py-16 border-t border-white/10">
+        <div class="space-y-8">
+            <h2 class="text-3xl font-bold">Planes que crecen contigo</h2>
+            <div class="grid gap-6 md:grid-cols-3">
+                {planes.map((plan) => (
+                    <article
+                        class={`p-6 rounded-3xl border ${
+                            plan.destacado ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20' : 'border-white/10 bg-white/5'
+                        }`}
+                    >
+                        <p class="text-sm font-semibold tracking-wide uppercase text-white/60">{plan.nombre}</p>
+                        <p class="mt-2 text-3xl font-bold text-white">{plan.precio}</p>
+                        <p class="mt-2 text-white/75">{plan.descripcion}</p>
+                        <ul class="mt-4 space-y-2 text-sm text-white/70">
+                            {plan.incluye.map((beneficio) => (
+                                <li class="flex items-start gap-2">
+                                    <span aria-hidden="true" class="mt-1 h-2 w-2 rounded-full bg-primary"></span>
+                                    {beneficio}
+                                </li>
+                            ))}
+                        </ul>
+                        <a href="#" class={`inline-flex items-center justify-center w-full mt-6 btn btn-lg ${plan.destacado ? '' : 'bg-white/10 text-white hover:bg-white/20'}`}>
+                            {plan.cta}
+                        </a>
+                    </article>
+                ))}
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 border-t border-white/10">
+        <div class="grid gap-8 md:grid-cols-[2fr_1fr] md:items-center">
+            <div class="space-y-4">
+                <h2 class="text-3xl font-bold">Comienza gratis y escala cuando lo necesites</h2>
+                <p class="text-white/80">
+                    Crea tu cuenta, importa tu catálogo y recibe 200 GB de almacenamiento cifrado. Los planes Pro añaden espacios para equipos, exportaciones ilimitadas y automatizaciones.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="#" class="btn btn-lg">Crear cuenta</a>
+                    <a href="#" class="btn btn-lg bg-white/10 text-white hover:bg-white/20">Hablar con ventas</a>
+                </div>
+            </div>
+            <div class="p-6 space-y-4 rounded-3xl bg-white/10">
+                <h3 class="text-xl font-semibold">Soporte experto 24/7</h3>
+                <p class="text-white/75">
+                    Mentores certificados en fotografía, color y video listos para ayudarte con revisiones personalizadas y workshops en vivo.
+                </p>
+            </div>
+        </div>
+    </section>
 </Layout>
