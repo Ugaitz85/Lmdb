@@ -21,6 +21,16 @@ All commands are run from the root of the project, from a terminal:
 
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/netlify-templates/astro-platform-starter)
 
+## GitHub URL
+
+This repository is not currently linked to a public GitHub URL in this environment (no `origin` remote is configured). To push it to your own GitHub account:
+
+1. Create a new empty repository on GitHub (e.g., `https://github.com/<tu-usuario>/<tu-repo>`).
+2. Add it as a remote: `git remote add origin https://github.com/<tu-usuario>/<tu-repo>.git`.
+3. Push the current branch: `git push -u origin work` (or the branch name you prefer).
+
+After pushing, that GitHub URL will host the full project, including the `DodgeBlocks/` Android game.
+
 ## Developing Locally
 
 | Prerequisites                                                                |
