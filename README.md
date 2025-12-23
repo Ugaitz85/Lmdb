@@ -31,6 +31,17 @@ This repository is not currently linked to a public GitHub URL in this environme
 
 After pushing, that GitHub URL will host the full project, including the `DodgeBlocks/` Android game.
 
+## Android Studio (juego DodgeBlocks)
+
+El juego Android completo está en `DodgeBlocks/`. Para abrirlo en Android Studio:
+
+1. En Android Studio: **File → Open** y selecciona la carpeta `DodgeBlocks/`.
+2. Espera a que finalice **Gradle Sync**.
+3. Elige un emulador o dispositivo.
+4. Pulsa **Run ▶ app** para instalar y ejecutar.
+
+Requisitos rápidos: Android Studio reciente (AGP 8.2.x), Java 17, `compileSdk/targetSdk 34`, `minSdk 24` (todo ya configurado en el proyecto).
+
 ## Developing Locally
 
 | Prerequisites                                                                |
