@@ -42,6 +42,16 @@ El juego Android completo está en `DodgeBlocks/`. Para abrirlo en Android Studi
 
 Requisitos rápidos: Android Studio reciente (AGP 8.2.x), Java 17, `compileSdk/targetSdk 34`, `minSdk 24` (todo ya configurado en el proyecto).
 
+### Clonar el repo directamente desde Android Studio
+
+Si prefieres clonar con la opción **Get from VCS** (pantalla con campo "Repository URL"):
+
+1. En Android Studio: **File → New → Project from Version Control…** (o el botón **Get from VCS** de la pantalla inicial).
+2. En **Version control** elige **Git** y pega la URL de tu repositorio (ej.: `https://github.com/<tu-usuario>/<tu-repo>.git`).
+3. Selecciona la carpeta de destino y pulsa **Clone**. Android Studio descargará el repo completo.
+4. Cuando termine, en el diálogo de importación elige abrir el subdirectorio `DodgeBlocks/` (es el proyecto Android). Si ya se abre la raíz, usa **File → Open…** y selecciona `DodgeBlocks/`.
+5. Deja que corra **Gradle Sync** y luego usa **Run ▶ app**.
+
 ## Developing Locally
 
 | Prerequisites                                                                |
