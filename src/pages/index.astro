@@ -1,21 +1,469 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ContextAlert from '../components/ContextAlert.astro';
-import Markdown from '../components/Markdown.astro';
 
-const explainer = `
-An Astro website can go way beyond static pages - on the right platform.
+const intro = {
+    title: 'Sobre Astro + Netlify',
+    body: [
+        'Un sitio en Astro puede ir mucho más allá de páginas estáticas cuando se apoya en la plataforma adecuada.',
+        'Netlify ofrece no solo [Streaming SSR](https://docs.astro.build/en/guides/server-side-rendering/#html-streaming) y [Edge Middleware](https://docs.astro.build/en/guides/middleware/), sino también [revalidación bajo demanda](https://www.netlify.com/blog/cache-tags-and-purge-api-on-netlify/) y [stale-while-revalidate](https://www.netlify.com/blog/swr-and-fine-grained-cache-control/).',
+        'Así, cualquier página o dato se reconstruye solo cuando hace falta, sin penalizar el rendimiento para quienes visitan el sitio.'
+    ]
+};
 
-Netlify supports not only [Streaming SSR](https://docs.astro.build/en/guides/server-side-rendering/#html-streaming) and fast [Edge Middleware](https://docs.astro.build/en/guides/middleware/), but also [on-demand revalidation](https://www.netlify.com/blog/cache-tags-and-purge-api-on-netlify/) and [stale-while-revalidate](https://www.netlify.com/blog/swr-and-fine-grained-cache-control/). 
-Any page or data can be rebuilt only when needed, without site visitors ever getting a performance hit.
-`;
+const install = {
+    title: 'Descarga e instalación rápida',
+    body: 'Clona el repositorio, instala dependencias y levanta el entorno local en minutos.',
+    command: `git clone <URL_DEL_REPO> prompts-app
+cd prompts-app
+npm install
+npm run dev -- --host 0.0.0.0 --port 4321`
+};
+
+const prompts = [
+    {
+        id: 'minimo',
+        title: 'Prompt mínimo (cuando quieres ir rápido)',
+        helper: 'Copia y pega tal cual, rellena lo que va entre `{}`:',
+        content: `NOMBRE APP: {NombreCorto}
+TIPO: {SaaS / Marketplace / App interna / IA / Fintech / Edtech / etc.}
+PROBLEMA: {Qué duele y a quién}
+USUARIOS: {Quién lo usa + quién paga}
+MVP (5-10 funcionalidades): {lista}
+DIFERENCIAL: {por qué tú ganas}
+REGIÓN/IDIOMA: {España/LatAm/Global} | {ES/EN}
+MODELO NEGOCIO: {suscripción / comisión / freemium / híbrido}
+RESTRICCIONES: {multitenant? mobile? offline? B2B?}
+ENTREGA: Empresa completa + código listo para instalar (Docker) + auth JWT + Prisma/Postgres + Next.js + CI/CD.`
+    },
+    {
+        id: 'pro',
+        title: 'Prompt PRO (recomendado: máximo resultado sin hacerlo largo)',
+        helper: 'Este es el “sweet spot”: suficiente detalle para que salga perfecto.',
+        content: `NOMBRE APP: {Nombre}
+ESLOGAN (opcional): {frase}
+CATEGORÍA: {SaaS B2B / B2C / Marketplace / IA / etc.}
+
+1) CLIENTE Y DOLOR
+- ICP (perfil ideal): {rol, sector, tamaño}
+- Dolor principal: {1 frase}
+- Alternativas actuales: {Excel, WhatsApp, herramientas X}
+- Objetivo medible: {ahorrar tiempo, aumentar ventas, reducir errores}
+
+2) PROPUESTA DE VALOR
+- Promesa: {qué consiguen en 1-2 líneas}
+- Diferenciación: {por qué eres 10x}
+- Moat: {datos, red, workflow, coste cambio}
+
+3) CASOS DE USO (top 3)
+- Caso 1: {…}
+- Caso 2: {…}
+- Caso 3: {…}
+
+4) MVP FUNCIONAL (priorizado)
+P0 (imprescindible):
+- {Feature 1}
+- {Feature 2}
+- {Feature 3}
+P1 (después):
+- {Feature 4}
+- {Feature 5}
+
+5) ROLES Y PERMISOS
+- Roles: {Admin, Manager, Usuario, etc.}
+- Reglas: {quién ve/edita qué}
+
+6) DATOS Y ENTIDADES
+- Entidades clave: {Usuario, Organización, Proyecto, Pedido…}
+- Eventos/auditoría: {sí/no}
+- Archivos: {sí/no} (S3-compatible si aplica)
+
+7) NO FUNCIONALES
+- Multitenant: {sí/no} (por organización)
+- Mobile/PWA: {sí/no}
+- Escalabilidad: {baja/media/alta}
+- Seguridad: {2FA? rate-limit?}
+- Privacidad/compliance: {GDPR sí/no}
+- Métricas: {logs, trazas, analítica}
+
+8) INTEGRACIONES (si aplica)
+- Pagos: {Stripe/otro}
+- Email: {SMTP/Resend}
+- Notificaciones: {push/WhatsApp}
+- IA: {resumen, clasificación, chat interno}
+
+9) BRANDING Y UX
+- Estilo: {minimalista, serio, divertido}
+- Referencias (sin marcas reales): {“tipo dashboard limpio”}
+- Tonalidad: {formal/cercana}
+
+10) ENTREGABLES EXACTOS
+- Empresa completa (mercado, pricing, growth, riesgos, compliance)
+- Monorepo dockerizado: Next.js + API Nest/Fastify + Prisma + Postgres
+- Auth JWT + refresh, seeds, tests básicos, GitHub Actions, scripts 1 comando
+- Documentación de instalación macOS/Linux/Windows(WSL)`
+    },
+    {
+        id: 'ultra',
+        title: 'Prompt ULTRA (si quieres control total y “cero sorpresas”)',
+        helper: 'Úsalo cuando hay requisitos duros (finanzas, salud, auditoría, permisos complejos, etc.).',
+        content: `NOMBRE APP: {Nombre}
+OBJETIVO 90 DÍAS: {métrica: MRR, usuarios activos, conversión, etc.}
+CATEGORÍA: {SaaS/Marketplace/IA/etc.}
+PAÍS(ES) Y MONEDA: {EUR/USD/etc.}
+
+A) CONTEXTO
+- Industria: {…}
+- Competencia (genérico): {2-3 tipos de alternativas}
+- Ventaja deseada: {velocidad, cumplimiento, automatización, UX}
+
+B) PRODUCTO
+- Jobs-to-be-done: {3 bullets}
+- Flujo principal (paso a paso): {1→2→3→4}
+- Pantallas: {Landing, Login, Dashboard, Settings, etc.}
+- Reglas de negocio: {condiciones importantes}
+
+C) ROLES, PERMISOS Y TENANCY
+- Multitenant: {sí/no} | Estrategia: {orgId por fila / schema por tenant}
+- Roles: {…}
+- Matriz permisos: {tabla mental: quién puede qué}
+
+D) DOMINIO Y DATOS
+- Entidades (con campos clave):
+  - {Entidad}: {campo1, campo2, relaciones}
+- Auditoría: {quién cambió qué y cuándo}
+- Retención datos: {X meses/años}
+
+E) SEGURIDAD Y COMPLIANCE
+- GDPR: {sí/no}
+- Datos sensibles: {sí/no} ¿cuáles?
+- Encriptación: {en reposo/en tránsito}
+- Backups: {RPO/RTO}
+- Rate limiting: {sí/no}
+- 2FA: {sí/no}
+
+F) INTEGRACIONES
+- Pagos: {Stripe} | Facturación: {sí/no}
+- Email: {SMTP/Resend} | Push: {Web Push}
+- Webhooks: {entrantes/salientes}
+- IA (si aplica): {casos concretos + guardrails}
+
+G) OPERACIÓN
+- Entornos: {dev/staging/prod}
+- Observabilidad: {logs, métricas}
+- Soporte: {SLA}
+
+H) ENTREGABLES
+- 16 secciones completas (empresa+producto+arquitectura+monorepo)
+- Instalación 1 comando (script bash) {sí/no}
+- Modo móvil (PWA + Capacitor APK debug) {sí/no}`
+    }
+];
+
+const examples = [
+    {
+        id: 'saas',
+        title: 'Ejemplo A — SaaS B2B',
+        content: `NOMBRE APP: TurnoFácil
+TIPO: SaaS B2B
+PROBLEMA: clínicas pequeñas pierden citas y gestionan agenda por WhatsApp, con cancelaciones y caos.
+USUARIOS: recepcionista/administración | paga el dueño de la clínica.
+MVP: agenda + recordatorios + fichas pacientes + pagos de reserva + reportes + multi-sede.
+DIFERENCIAL: reduce no-shows con recordatorios y reservas con depósito, todo en 5 minutos de setup.
+REGIÓN/IDIOMA: España | ES
+MODELO NEGOCIO: suscripción por sede + fee por SMS opcional
+RESTRICCIONES: multitenant sí, PWA sí, GDPR sí.
+ENTREGA: empresa completa + monorepo docker listo.`
+    },
+    {
+        id: 'marketplace',
+        title: 'Ejemplo B — Marketplace',
+        content: `NOMBRE APP: ReparaYa
+CATEGORÍA: Marketplace
+ICP: personas que necesitan reparación doméstica; pagan los clientes, cobran técnicos.
+Dolor: encontrar técnico confiable rápido y con precio claro.
+MVP P0: alta de técnicos + verificación básica + solicitudes + chat + presupuesto + pagos escrow simple.
+P1: reseñas, suscripción pro para técnicos, rutas y disponibilidad.
+Región: LatAm | ES
+Integraciones: pagos (Stripe o equivalente), email transaccional.
+No funcionales: PWA sí, anti-fraude básico, auditoría de acciones.
+Entregables: empresa completa + código listo + CI/CD + docker.`
+    }
+];
+
+const proMax = {
+    title: 'Prompt PRO “máxima potencia” (plantilla recomendada)',
+    content: `NOMBRE APP: {Nombre corto y memorable}
+TAGLINE (opcional): {1 frase}
+CATEGORÍA: {SaaS B2B / B2C / Marketplace / IA / Internal tool / Fintech / Edtech / etc.}
+REGIÓN/IDIOMA: {España/LatAm/Global} | {ES/EN}
+MONEDA (si aplica): {EUR/USD/etc.}
+
+1) CLIENTE Y DOLOR
+- ICP (perfil ideal): {rol + sector + tamaño}
+- Usuario principal: {quién lo usa}
+- Pagador: {quién paga}
+- Dolor #1: {qué duele hoy}
+- Dolor #2: {qué más duele}
+- Alternativas actuales: {Excel/WhatsApp/competidores genéricos/procesos manuales}
+- Resultado deseado (métrica): {ahorrar X horas / +Y% conversión / -Z% errores}
+
+2) PROPUESTA DE VALOR
+- Promesa: {1-2 líneas}
+- Diferenciador 10x: {por qué tú ganas}
+- Barrera/moat: {datos/workflow/coste de cambio/red}
+
+3) CASOS DE USO (Top 3)
+- Caso 1: {situación → acción → resultado}
+- Caso 2: {…}
+- Caso 3: {…}
+
+4) MVP PRIORITIZADO (P0/P1)
+P0 (imprescindible para vender):
+- {Feature P0.1}
+- {Feature P0.2}
+- {Feature P0.3}
+- {Feature P0.4}
+P1 (después de validar):
+- {Feature P1.1}
+- {Feature P1.2}
+- {Feature P1.3}
+
+5) ROLES Y PERMISOS
+- Roles: {Owner/Admin/Manager/User/etc.}
+- Reglas clave: {quién puede ver/crear/editar/borrar qué}
+
+6) ENTIDADES Y DATOS
+- Entidades clave: {User, Organization, Project, Order, Ticket…}
+- Relaciones importantes: {Org->Users, Project->Tasks…}
+- Auditoría de cambios: {sí/no} (quién hizo qué y cuándo)
+- Archivos: {sí/no} (si sí: S3-compatible)
+
+7) REQUISITOS NO FUNCIONALES
+- Multitenant: {sí/no} (por organización)
+- PWA instalable: {sí/no}
+- Mobile (APK debug con Capacitor): {sí/no}
+- Offline/low-connectivity: {sí/no}
+- Escalabilidad: {baja/media/alta}
+- Seguridad: {2FA sí/no, rate limiting sí/no}
+- Privacidad/Compliance: {GDPR sí/no}
+- Observabilidad: {logs/métricas/trazas}
+
+8) INTEGRACIONES (si aplica)
+- Pagos: {Stripe/otro/ninguno}
+- Emails transaccionales: {SMTP/Resend/etc.}
+- Notificaciones: {WebPush/SMS/WhatsApp/ninguno}
+- Webhooks/API externa: {…}
+- IA (si aplica): {resumir, clasificar, recomendar, chat interno} + límites/guardrails
+
+9) UX Y BRANDING
+- Estilo visual: {minimalista/enterprise/divertido}
+- Tonalidad copy: {formal/cercana}
+- Pantallas clave: {Landing, Login, Dashboard, CRUD principal, Settings, Billing}
+
+10) ENTREGABLES EXACTOS (OBLIGATORIO)
+- 16 secciones completas (empresa + mercado + producto + arquitectura + negocio + growth + riesgos + compliance)
+- Monorepo dockerizado listo para instalar:
+  - Frontend: Next.js + React Query
+  - Backend: NestJS o Fastify (TS) + Prisma + PostgreSQL
+  - Auth: JWT + refresh tokens, RBAC
+  - Seeds + migraciones + tests básicos
+  - Infra: Dockerfiles + docker-compose + scripts + .env.example
+  - CI/CD: GitHub Actions
+- Comandos copy-paste para macOS/Linux/Windows(WSL)
+- Modo “Instalación 1 comando” (script bash que genera repo y levanta todo): {sí/no}
+
+RESTRICCIONES/NO-GOS (opcional):
+- {ej: “sin vendor lock-in”, “no usar colas”, “solo open-source”, “evitar dependencias pesadas”, etc.}`
+};
+
+const tips = [
+    'ICP (quién)',
+    'Dolor (qué)',
+    'Flujo principal (cómo lo usan)',
+    'MVP P0 (qué incluye sí o sí)',
+    'Modelo de negocio (cómo cobras)'
+];
 ---
 
-<Layout title="Welcome to Astro.">
+<Layout title="Prompts para generadores de producto">
     <ContextAlert class="mb-8" />
-    <h1 class="mb-10">Netlify Platform Starter for Astro</h1>
-    <Markdown content={explainer} class="mb-10 text-lg" />
-    <p>
-        <a href="https://docs.netlify.com/frameworks/astro/" class="btn btn-lg sm:min-w-64">Read the Docs</a>
-    </p>
+    <section class="space-y-6">
+        <h1 class="mb-4">Prompts para definir producto y entregables</h1>
+        <div class="rounded-2xl border border-gray-800 bg-gray-900/40 p-6 space-y-4">
+            <h2 class="text-xl font-semibold">{intro.title}</h2>
+            <div class="space-y-3 text-gray-200">
+                {intro.body.map((paragraph) => (
+                    <p set:html={paragraph} />
+                ))}
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-10 rounded-2xl border border-gray-800 bg-gray-900/40 p-6 space-y-4">
+        <h2 class="text-xl font-semibold">{install.title}</h2>
+        <p class="text-gray-200">{install.body}</p>
+        <textarea
+            id="install-commands"
+            class="min-h-[160px] w-full rounded-xl border border-gray-700 bg-gray-950/80 p-4 font-mono text-sm text-gray-100"
+            readonly
+        >{install.command}</textarea>
+        <div class="flex flex-wrap items-center gap-3">
+            <button class="btn" type="button" data-copy="install-commands">Copiar comandos</button>
+            <span
+                class="text-sm text-gray-400"
+                data-status="install-commands"
+                aria-live="polite"
+                aria-atomic="true"
+                role="status"
+            ></span>
+        </div>
+    </section>
+
+    <section class="mt-10 grid gap-6">
+        {prompts.map((prompt) => (
+            <article class="rounded-2xl border border-gray-800 bg-gray-900/40 p-6 space-y-4">
+                <header class="space-y-2">
+                    <h2 class="text-xl font-semibold">{prompt.title}</h2>
+                    <p class="text-gray-200">{prompt.helper}</p>
+                </header>
+                <textarea
+                    id={`prompt-${prompt.id}`}
+                    class="min-h-[240px] w-full rounded-xl border border-gray-700 bg-gray-950/80 p-4 font-mono text-sm text-gray-100"
+                    readonly
+                >{prompt.content}</textarea>
+                <div class="flex flex-wrap items-center gap-3">
+                    <button class="btn" type="button" data-copy={`prompt-${prompt.id}`}>Copiar prompt</button>
+                    <span
+                        class="text-sm text-gray-400"
+                        data-status={`prompt-${prompt.id}`}
+                        aria-live="polite"
+                        aria-atomic="true"
+                        role="status"
+                    ></span>
+                </div>
+            </article>
+        ))}
+    </section>
+
+    <section class="mt-12 rounded-2xl border border-gray-800 bg-gray-900/40 p-6 space-y-4">
+        <h2 class="text-xl font-semibold">2 ejemplos rellenos (para que lo copies y adaptes)</h2>
+        <div class="grid gap-4 lg:grid-cols-2">
+            {examples.map((example) => (
+                <div class="rounded-xl border border-gray-800 bg-gray-950/80 p-4 space-y-3">
+                    <h3 class="text-lg font-semibold">{example.title}</h3>
+                    <textarea
+                        id={`example-${example.id}`}
+                        class="min-h-[220px] w-full rounded-lg border border-gray-700 bg-gray-950/80 p-3 font-mono text-sm text-gray-100"
+                        readonly
+                    >{example.content}</textarea>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button class="btn" type="button" data-copy={`example-${example.id}`}>Copiar ejemplo</button>
+                        <span
+                            class="text-sm text-gray-400"
+                            data-status={`example-${example.id}`}
+                            aria-live="polite"
+                            aria-atomic="true"
+                            role="status"
+                        ></span>
+                    </div>
+                </div>
+            ))}
+        </div>
+    </section>
+
+    <section class="mt-12 rounded-2xl border border-gray-800 bg-gray-900/40 p-6 space-y-4">
+        <h2 class="text-xl font-semibold">Consejo práctico (para que salga “redondo”)</h2>
+        <p class="text-gray-200">Si solo puedes rellenar 5 cosas, rellena estas:</p>
+        <ul class="list-disc pl-6 text-gray-200">
+            {tips.map((tip) => (
+                <li>{tip}</li>
+            ))}
+        </ul>
+        <p class="text-gray-200">
+            Si quieres, pega aquí tu prompt PRO ya rellenado (aunque sea con 6–10 líneas) y lo convierto en una versión aún más
+            “blindada” para que el generador entregue exactamente lo que imaginas.
+        </p>
+    </section>
+
+    <section class="mt-12 rounded-2xl border border-gray-800 bg-gray-900/40 p-6 space-y-4">
+        <h2 class="text-xl font-semibold">{proMax.title}</h2>
+        <textarea
+            id="prompt-pro-max"
+            class="min-h-[360px] w-full rounded-xl border border-gray-700 bg-gray-950/80 p-4 font-mono text-sm text-gray-100"
+            readonly
+        >{proMax.content}</textarea>
+        <div class="flex flex-wrap items-center gap-3">
+            <button class="btn" type="button" data-copy="prompt-pro-max">Copiar plantilla completa</button>
+            <span
+                class="text-sm text-gray-400"
+                data-status="prompt-pro-max"
+                aria-live="polite"
+                aria-atomic="true"
+                role="status"
+            ></span>
+        </div>
+    </section>
+
+    <script>
+        const initCopyButtons = () => {
+            const buttons = document.querySelectorAll('[data-copy]');
+            const statusTimeouts = new Map();
+
+            const setStatus = (targetId, message) => {
+                const status = document.querySelector(`[data-status="${targetId}"]`);
+                if (status) {
+                    if (statusTimeouts.has(status)) {
+                        clearTimeout(statusTimeouts.get(status));
+                        statusTimeouts.delete(status);
+                    }
+                    status.textContent = message;
+                    const timeoutId = setTimeout(() => {
+                        status.textContent = '';
+                    }, 1800);
+                    statusTimeouts.set(status, timeoutId);
+                }
+            };
+
+            const copyWithFallback = (textarea, value, targetId) => {
+                if (!document.queryCommandSupported || !document.queryCommandSupported('copy')) {
+                    setStatus(targetId, 'No se pudo copiar.');
+                    return;
+                }
+                textarea.focus({ preventScroll: true });
+                textarea.select();
+                textarea.setSelectionRange(0, value.length);
+                const success = document.execCommand('copy');
+                setStatus(targetId, success ? 'Copiado.' : 'No se pudo copiar.');
+            };
+
+            buttons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-copy');
+                    const textarea = document.getElementById(targetId);
+                    if (!textarea) {
+                        return;
+                    }
+
+                    const value = textarea.value;
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard
+                            .writeText(value)
+                            .then(() => setStatus(targetId, 'Copiado.'))
+                            .catch(() => copyWithFallback(textarea, value, targetId));
+                        return;
+                    }
+
+                    copyWithFallback(textarea, value, targetId);
+                });
+            });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCopyButtons);
+        } else {
+            initCopyButtons();
+        }
+    </script>
 </Layout>
