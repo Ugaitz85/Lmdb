@@ -20,6 +20,13 @@ npm install
 npm run dev -- --host 0.0.0.0 --port 4321`
 };
 
+
+const demo = {
+    title: 'Demo jugable: NuikaCraft Lite',
+    body: 'He añadido una demo voxel en un único HTML para jugar en navegador (desktop) con romper/colocar bloques y ciclo día/noche simple.',
+    openPath: '/nuikacraft-lite.html'
+};
+
 const prompts = [
     {
         id: 'minimo',
@@ -317,6 +324,16 @@ const tips = [
                 aria-atomic="true"
                 role="status"
             ></span>
+        </div>
+    </section>
+
+
+    <section class="mt-10 rounded-2xl border border-gray-800 bg-gray-900/40 p-6 space-y-4">
+        <h2 class="text-xl font-semibold">{demo.title}</h2>
+        <p class="text-gray-200">{demo.body}</p>
+        <div class="flex flex-wrap gap-3">
+            <a class="btn" href={demo.openPath} target="_blank" rel="noopener noreferrer">Abrir demo</a>
+            <a class="btn" href={demo.openPath} download>Descargar HTML</a>
         </div>
     </section>
 

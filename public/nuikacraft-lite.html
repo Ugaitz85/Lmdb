@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NuikaCraft Lite</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; font-family: Inter, system-ui, sans-serif; background:#8ec9ff; }
+    #hud { position: fixed; inset: 0; pointer-events: none; color: white; text-shadow: 0 2px 4px rgba(0,0,0,.8); }
+    #crosshair { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 24px; }
+    #top { position: absolute; left: 12px; top: 10px; background: rgba(0,0,0,.35); padding: 8px 10px; border-radius: 10px; }
+    #hotbar { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; gap: 6px; }
+    .slot { width: 46px; height: 46px; border: 2px solid rgba(255,255,255,.55); border-radius: 8px; background: rgba(0,0,0,.28); display:flex; align-items:center; justify-content:center; font-weight:700; }
+    .slot.active { border-color: #ffe17a; box-shadow: 0 0 0 2px rgba(255,225,122,.35) inset; }
+    #start {
+      position: fixed; inset: 0; display: grid; place-items: center; background: linear-gradient(#5cb8ff, #a6dcff);
+    }
+    #panel { max-width: 560px; margin: 20px; background: rgba(0,0,0,.52); color: white; padding: 20px; border-radius: 14px; }
+    button { border:0; border-radius: 10px; padding: 10px 14px; font-weight:700; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div id="start">
+    <div id="panel">
+      <h1>NuikaCraft Lite</h1>
+      <p>Demo jugable inspirada en sandbox voxel. Controles: <b>WASD</b>, <b>Espacio</b> saltar, <b>F</b> vuelo, <b>Click izq</b> romper, <b>Click der</b> colocar, <b>1-6</b> cambiar bloque.</p>
+      <button id="play">Entrar al mundo</button>
+    </div>
+  </div>
+
+  <div id="hud" hidden>
+    <div id="top">Coords: <span id="coords">0,0,0</span> · Bloque: <span id="selected">1</span></div>
+    <div id="crosshair">+</div>
+    <div id="hotbar"></div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.162.0/build/three.module.js';
+
+    const BLOCKS = {
+      1: { name: 'Pasto', color: 0x4caf50 },
+      2: { name: 'Tierra', color: 0x7a4f2b },
+      3: { name: 'Piedra', color: 0x8f9499 },
+      4: { name: 'Arena', color: 0xd8c477 },
+      5: { name: 'Madera', color: 0x8b5a2b },
+      6: { name: 'Hojas', color: 0x2f7f3a },
+    };
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x8ec9ff);
+    scene.fog = new THREE.Fog(0x8ec9ff, 40, 100);
+
+    const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 200);
+    camera.position.set(0, 14, 0);
+
+    const sun = new THREE.DirectionalLight(0xffffff, 1.1);
+    sun.position.set(30, 45, 10);
+    scene.add(sun);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+
+    const materials = {};
+    for (const [id, data] of Object.entries(BLOCKS)) {
+      materials[id] = new THREE.MeshLambertMaterial({ color: data.color });
+    }
+
+    const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+    const world = new Map();
+    const meshes = new Map();
+    const raycaster = new THREE.Raycaster();
+
+    const key = (x, y, z) => `${x}|${y}|${z}`;
+
+    function noise(x, z) {
+      return (Math.sin(x * 0.16) + Math.cos(z * 0.16) + Math.sin((x + z) * 0.09)) * 0.5;
+    }
+
+    function setBlock(x, y, z, id) {
+      const k = key(x, y, z);
+      const old = meshes.get(k);
+      if (old) {
+        scene.remove(old);
+        old.geometry.dispose();
+        meshes.delete(k);
+      }
+      if (!id) {
+        world.delete(k);
+        return;
+      }
+      world.set(k, id);
+      const mesh = new THREE.Mesh(boxGeo, materials[id]);
+      mesh.position.set(x + 0.5, y + 0.5, z + 0.5);
+      mesh.userData = { x, y, z };
+      scene.add(mesh);
+      meshes.set(k, mesh);
+    }
+
+    function generateWorld(radius = 28) {
+      for (let x = -radius; x <= radius; x++) {
+        for (let z = -radius; z <= radius; z++) {
+          const h = Math.floor(8 + noise(x, z) * 4);
+          const isSand = h <= 7;
+          for (let y = 0; y <= h; y++) {
+            let id = 2;
+            if (y === h) id = isSand ? 4 : 1;
+            if (y < h - 3) id = 3;
+            setBlock(x, y, z, id);
+          }
+          if (!isSand && Math.random() < 0.03) {
+            const trunk = h + 1;
+            for (let t = 0; t < 3; t++) setBlock(x, trunk + t, z, 5);
+            for (let lx = -1; lx <= 1; lx++) for (let lz = -1; lz <= 1; lz++) setBlock(x + lx, trunk + 3, z + lz, 6);
+          }
+        }
+      }
+    }
+
+    generateWorld();
+
+    const player = {
+      vel: new THREE.Vector3(),
+      dir: new THREE.Vector3(),
+      onGround: false,
+      speed: 11,
+      selected: 1,
+      flying: false,
+      yaw: 0,
+      pitch: 0,
+    };
+
+    const keys = new Set();
+    document.addEventListener('keydown', (e) => {
+      keys.add(e.code);
+      if (e.code.startsWith('Digit')) {
+        const n = Number(e.code.slice(5));
+        if (BLOCKS[n]) selectBlock(n);
+      }
+      if (e.code === 'KeyF') player.flying = !player.flying;
+    });
+    document.addEventListener('keyup', (e) => keys.delete(e.code));
+
+    function selectBlock(n) {
+      player.selected = n;
+      selected.textContent = `${n} (${BLOCKS[n].name})`;
+      document.querySelectorAll('.slot').forEach((el, i) => el.classList.toggle('active', i + 1 === n));
+    }
+
+    const hotbar = document.getElementById('hotbar');
+    for (let i = 1; i <= 6; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'slot' + (i === 1 ? ' active' : '');
+      slot.textContent = i;
+      hotbar.appendChild(slot);
+    }
+
+    let locked = false;
+    const start = document.getElementById('start');
+    const hud = document.getElementById('hud');
+    document.getElementById('play').onclick = () => {
+      renderer.domElement.requestPointerLock();
+    };
+
+    document.addEventListener('pointerlockchange', () => {
+      locked = document.pointerLockElement === renderer.domElement;
+      start.hidden = locked;
+      hud.hidden = !locked;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!locked) return;
+      player.yaw -= e.movementX * 0.0022;
+      player.pitch -= e.movementY * 0.0022;
+      player.pitch = Math.max(-1.5, Math.min(1.5, player.pitch));
+    });
+
+    function targetBlock() {
+      raycaster.setFromCamera({ x: 0, y: 0 }, camera);
+      const hits = raycaster.intersectObjects([...meshes.values()], false);
+      return hits[0] || null;
+    }
+
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+    document.addEventListener('mousedown', (e) => {
+      if (!locked) return;
+      const hit = targetBlock();
+      if (!hit) return;
+      const p = hit.object.userData;
+      if (e.button === 0) {
+        setBlock(p.x, p.y, p.z, 0);
+      }
+      if (e.button === 2) {
+        const n = hit.face.normal;
+        setBlock(p.x + n.x, p.y + n.y, p.z + n.z, player.selected);
+      }
+    });
+
+    const coords = document.getElementById('coords');
+    const selected = document.getElementById('selected');
+    selectBlock(1);
+
+    const clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.05);
+
+      camera.rotation.order = 'YXZ';
+      camera.rotation.y = player.yaw;
+      camera.rotation.x = player.pitch;
+
+      const move = new THREE.Vector3();
+      if (keys.has('KeyW')) move.z -= 1;
+      if (keys.has('KeyS')) move.z += 1;
+      if (keys.has('KeyA')) move.x -= 1;
+      if (keys.has('KeyD')) move.x += 1;
+      if (move.lengthSq()) move.normalize();
+
+      const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), player.yaw);
+      const right = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), player.yaw);
+      player.dir.copy(forward.multiplyScalar(move.z).add(right.multiplyScalar(move.x)));
+
+      camera.position.addScaledVector(player.dir, player.speed * dt);
+
+      if (player.flying) {
+        if (keys.has('Space')) camera.position.y += player.speed * dt;
+        if (keys.has('ShiftLeft')) camera.position.y -= player.speed * dt;
+      } else {
+        player.vel.y -= 28 * dt;
+        if (keys.has('Space') && player.onGround) {
+          player.vel.y = 10;
+          player.onGround = false;
+        }
+        camera.position.y += player.vel.y * dt;
+        const ground = Math.floor(8 + noise(Math.floor(camera.position.x), Math.floor(camera.position.z)) * 4) + 1.75;
+        if (camera.position.y <= ground) {
+          camera.position.y = ground;
+          player.vel.y = 0;
+          player.onGround = true;
+        }
+      }
+
+      const t = performance.now() * 0.00004;
+      sun.position.set(Math.cos(t) * 40, Math.sin(t) * 45 + 8, Math.sin(t) * 25);
+
+      coords.textContent = `${camera.position.x.toFixed(1)}, ${camera.position.y.toFixed(1)}, ${camera.position.z.toFixed(1)}`;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  </script>
+</body>
+</html>
