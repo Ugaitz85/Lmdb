@@ -1,0 +1,8 @@
+<resources>
+    <!-- Tema base XML mínimo (Compose renderiza Material3 dentro).
+         Sin ActionBar para pantalla completa/edge-to-edge. -->
+    <style name="Theme.DodgeBlocks" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>
