@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00ffcc">
+    <meta name="background-color" content="#0f172a">
+    <link rel="manifest" href="manifest.json">
+    <title>Nuika Video Creator v5</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: radial-gradient(circle at top, #1d4ed8, #0b1020 55%), linear-gradient(135deg, #0f172a, #1f2937); color: #f8fafc; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: rgba(15, 23, 42, 0.9); padding: 30px; border-radius: 18px; box-shadow: 0 20px 50px rgba(14, 116, 144, 0.35), 0 8px 24px rgba(0,0,0,0.5); border: 1px solid rgba(56, 189, 248, 0.25); }
+        h1 { color: #22d3ee; text-align: center; font-size: 2.8em; margin-bottom: 10px; text-shadow: 0 0 18px rgba(34, 211, 238, 0.45); }
+        h1 span { color: #f472b6; }
+        p.subtitle { text-align: center; font-size: 1.3em; margin-bottom: 30px; opacity: 0.9; }
+        label { display: block; margin: 15px 0 5px; font-weight: bold; }
+        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid rgba(148, 163, 184, 0.4); background: #111827; color: #f8fafc; box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.1); }
+        textarea { resize: vertical; min-height: 80px; }
+        .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        button { background: linear-gradient(135deg, #22d3ee, #3b82f6); color: #0b1120; padding: 12px 20px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(59, 130, 246, 0.35); }
+        button:hover { background: linear-gradient(135deg, #f472b6, #fb7185); transform: scale(1.05); }
+        #copyBtn { background: linear-gradient(135deg, #f97316, #facc15); margin-left: 10px; }
+        #preview { max-width: 100%; border-radius: 14px; margin: 20px 0; border: 3px solid #22d3ee; box-shadow: 0 12px 30px rgba(34, 211, 238, 0.25); }
+        #output { background: #0f172a; padding: 20px; border-radius: 12px; margin-top: 20px; white-space: pre-wrap; font-family: monospace; font-size: 1.1em; border: 1px solid rgba(248, 250, 252, 0.1); }
+        .examples { display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0; }
+        .examples button { background: linear-gradient(135deg, #14b8a6, #22c55e); font-size: 0.9em; color: #052e2b; }
+        .info-tool { background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 64, 175, 0.55)); padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 1em; border: 1px solid rgba(34, 211, 238, 0.25); }
+        footer { text-align: center; margin-top: 40px; font-size: 0.9em; opacity: 0.7; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nuika <span>Video Creator v5</span></h1>
+        <p class="subtitle">PWA instalable · Generador definitivo de prompts para las mejores IA de video 2026</p>
+
+        <label>Herramienta IA:</label>
+        <select id="herramienta" onchange="actualizarInfo()">
+            <option value="veo">Google Veo 3.1 (Gemini) - Mejor calidad overall 2026 ⭐</option>
+            <option value="kling">Kling AI 2.6 - Realismo y movimiento top</option>
+            <option value="grok">Grok Imagine - Rápido y gratuito en app/X</option>
+            <option value="runway">Runway Gen-4.5 - Control profesional</option>
+            <option value="sora">OpenAI Sora 2 - Creatividad alta</option>
+            <option value="heygen">HeyGen - Mejor clonación voz + avatars</option>
+        </select>
+        <div id="info-tool" class="info-tool">Info: Veo 3.1 - Enfócate en descripción detallada y cámara para resultados cinematográficos.</div>
+
+        <label>Subir imagen base (opcional):</label>
+        <input type="file" id="imagen" accept="image/*">
+        <img id="preview" src="" alt="Vista previa">
+
+        <div class="row">
+            <div>
+                <label>Descripción escena/sujeto principal:</label>
+                <textarea id="desc" placeholder="Ej: Robot futurista caminando por ciudad nevada al atardecer..."></textarea>
+            </div>
+            <div>
+                <label>Texto narración/diálogo (script):</label>
+                <textarea id="voz" placeholder="Ej: ¡Bienvenidos al futuro de los videos IA en 2026!"></textarea>
+            </div>
+        </div>
+
+        <div class="row">
+            <div>
+                <label>Duración:</label>
+                <select id="duracion">
+                    <option value="10-15 segundos">10-15 seg</option>
+                    <option value="20-30 segundos" selected>20-30 seg</option>
+                    <option value="1 minuto">1 minuto (pro)</option>
+                </select>
+            </div>
+            <div>
+                <label>Movimiento cámara:</label>
+                <input type="text" id="camara" placeholder="Ej: slow zoom in, pan left, dolly out">
+            </div>
+            <div>
+                <label>Estilo visual:</label>
+                <select id="estiloVisual">
+                    <option value="cinemático photorealista 4K">Cinemático photorealista 4K</option>
+                    <option value="hyper-realista">Hyper-realista</option>
+                    <option value="estilo película">Estilo película</option>
+                    <option value="cartoon animado">Cartoon animado</option>
+                </select>
+            </div>
+            <div>
+                <label>Emoción/Tono voz:</label>
+                <input type="text" id="tonoVoz" placeholder="Ej: entusiasta, épico, calmado (HeyGen: usa clonación)">
+            </div>
+        </div>
+
+        <div class="examples">
+            <button onclick="cargarEjemplo(1)">Trailer Nuika</button>
+            <button onclick="cargarEjemplo(2)">Animación Realista</button>
+            <button onclick="cargarEjemplo(3)">Avatar con Voz Clonada</button>
+            <button onclick="cargarEjemplo(4)">Cinemático Épico</button>
+        </div>
+
+        <button onclick="generarPrompt()" style="width:100%; padding:15px; font-size:1.3em;">Generar Prompt Óptimo 2026</button>
+
+        <h2>Prompt listo (copia y pega):</h2>
+        <div style="display:flex; align-items:center;">
+            <div id="output">Selecciona y genera...</div>
+            <button id="copyBtn" onclick="copiarPrompt()" style="display:none;">Copiar</button>
+        </div>
+
+        <footer>
+            <p>Guía: Veo en gemini.google.com · Kling en kling.ai · HeyGen para clonar voz (sube audio tuyo).</p>
+            <p>¡La v5 incluye TODO lo top de 2026!</p>
+            <p>¡Ahora instalable como app nativa en Android y Windows!</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('imagen').addEventListener('change', function(e) {
+            if (e.target.files[0]) document.getElementById('preview').src = URL.createObjectURL(e.target.files[0]);
+        });
+
+        function actualizarInfo() {
+            const tool = document.getElementById('herramienta').value;
+            const infos = {
+                veo: 'Veo 3.1 (Gemini) - Mejor calidad 2026: descripción rica + cámara = magia cinematográfica.',
+                kling: 'Kling 2.6 - Física/movimiento líder: detalla acción y cámara.',
+                grok: 'Grok Imagine - Audio nativo fuerte: añade música y voz detallada.',
+                runway: 'Runway Gen-4.5 - Control pro: enfócate en motion y edición.',
+                sora: 'Sora 2 - Creatividad extrema: prompts narrativos complejos.',
+                heygen: 'HeyGen - Clonación voz + avatars: sube audio/imagen tuya para personalización total ⭐'
+            };
+            document.getElementById('info-tool').textContent = infos[tool];
+        }
+
+        function cargarEjemplo(num) {
+            if (num === 1) {
+                document.getElementById('desc').value = "Interfaz app Nuika brillando en fondo futurista";
+                document.getElementById('voz').value = "¡Nuika v5 soporta las 6 mejores IA de video 2026, incluyendo clonación de voz!";
+                document.getElementById('camara').value = "zoom lento al logo, partículas";
+                document.getElementById('tonoVoz').value = "entusiasta profesional";
+            } else if (num === 2) {
+                document.getElementById('desc').value = "Dragón volando sobre montañas nevadas";
+                document.getElementById('voz').value = "El poder de la IA cobra vida...";
+                document.getElementById('camara').value = "pan siguiendo al dragón, dolly up";
+                document.getElementById('tonoVoz').value = "épico narrador";
+            } else if (num === 3) {
+                document.getElementById('desc').value = "Avatar persona hablando a cámara";
+                document.getElementById('voz').value = "Mi voz clonada explicando Nuika...";
+                document.getElementById('camara').value = "cámara fija con zoom sutil";
+                document.getElementById('tonoVoz').value = "natural (clonar mi voz)";
+            } else if (num === 4) {
+                document.getElementById('desc').value = "Ciudad futurista con drones y luces neón";
+                document.getElementById('voz').value = "Bienvenidos al 2026 de videos IA perfectos.";
+                document.getElementById('camara').value = "aerial pan, slow motion";
+                document.getElementById('tonoVoz').value = "cinemático";
+            }
+            generarPrompt();
+        }
+
+        function generarPrompt() {
+            const herramienta = document.getElementById('herramienta').value;
+            const tieneImagen = document.getElementById('imagen').files.length > 0;
+            const base = tieneImagen ? "Anima esta imagen:" : document.getElementById('desc').value || "escena épica";
+            const duracion = document.getElementById('duracion').value;
+            const camara = document.getElementById('camara').value || "dinámica fluida";
+            const estilo = document.getElementById('estiloVisual').value;
+            const textoVoz = document.getElementById('voz').value || "Narración profesional";
+            const tono = document.getElementById('tonoVoz').value || "entusiasta";
+
+            let prompt = '';
+
+            if (herramienta === 'veo') {
+                prompt = `${base} en video ${duracion} ${estilo}, cámara: ${camara}, movimiento natural coherente. Añade narración ${tono} diciendo: "${textoVoz}". Audio inmersivo con música épica y sonidos ambientales. Alta fidelidad cinematográfica.`;
+            } else if (herramienta === 'kling') {
+                prompt = `Sujeto: ${base}, acción detallada con física realista, cámara: ${camara}, estilo ${estilo}. Duración ${duracion}. Si diálogo: "${textoVoz}" con lip-sync preciso y voz ${tono}. Añade música inmersiva y efectos sonoros.`;
+            } else if (herramienta === 'grok') {
+                prompt = `Anima ${base} en ${duracion} ${estilo}: ${camara}, efectos luz/partículas. Voz narrada ${tono} diciendo: "${textoVoz}". Música épica fondo, sonidos ambientales. 4K, lip-sync perfecto.`;
+            } else if (herramienta === 'runway') {
+                prompt = `Image-to-video: ${base}, motion brush en áreas clave, cámara ${camara}, estilo ${estilo}. Duración ${duracion}. Añade vozover ${tono}: "${textoVoz}" con lip-sync. Audio completo.`;
+            } else if (herramienta === 'sora') {
+                prompt = `Genera video creativo: ${base} evolucionando dinámicamente, cámara ${camara}, estilo ${estilo}. Narración ${tono}: "${textoVoz}". Duración ${duracion}, alta coherencia.`;
+            } else if (herramienta === 'heygen') {
+                prompt = `Crea avatar video: Usa imagen subida como avatar, script: "${textoVoz}". Clona voz si subes audio (tono ${tono}). Fondo/estilo ${estilo}, cámara ${camara}. Lip-sync perfecto, duración ${duracion}. (Nota: Sube audio para clonación real)`;
+            }
+
+            document.getElementById('output').textContent = prompt;
+            document.getElementById('copyBtn').style.display = 'inline-block';
+        }
+
+        function copiarPrompt() {
+            const texto = document.getElementById('output').textContent;
+            navigator.clipboard.writeText(texto).then(() => alert('¡Prompt copiado! Úsalo en la herramienta seleccionada.'));
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(() => console.log('Service Worker registrado'))
+                    .catch(err => console.log('Error SW:', err));
+            });
+        }
+
+        actualizarInfo();
+    </script>
+</body>
+</html>
