@@ -26,14 +26,14 @@
         .examples button { background: linear-gradient(135deg, #14b8a6, #22c55e); font-size: 0.9em; color: #052e2b; }
         .info-tool { background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 64, 175, 0.55)); padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 1em; border: 1px solid rgba(34, 211, 238, 0.25); }
         footer { text-align: center; margin-top: 40px; font-size: 0.9em; opacity: 0.7; }
-    </style>
+    * {box-sizing:border-box} .row {grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr))} #output {overflow-wrap:anywhere;min-width:0;flex:1} #preview[hidden]{display:none} @media(max-width:600px){body{padding:8px}.container{padding:16px}h1{font-size:1.8em} #copyBtn{margin:0} } </style>
 </head>
 <body>
     <div class="container">
         <h1>Nuika <span>Video Creator v5</span></h1>
         <p class="subtitle">PWA instalable · Generador definitivo de prompts para las mejores IA de video 2026</p>
 
-        <label>Herramienta IA:</label>
+        <p id="status" role="status" aria-live="polite"></p><button id="install" hidden>Instalar aplicación</button><label for="herramienta">Herramienta IA:</label>
         <select id="herramienta" onchange="actualizarInfo()">
             <option value="veo">Google Veo 3.1 (Gemini) - Mejor calidad overall 2026 ⭐</option>
             <option value="kling">Kling AI 2.6 - Realismo y movimiento top</option>
@@ -46,7 +46,7 @@
 
         <label>Subir imagen base (opcional):</label>
         <input type="file" id="imagen" accept="image/*">
-        <img id="preview" src="" alt="Vista previa">
+        <img id="preview" hidden alt="Vista previa">
 
         <div class="row">
             <div>
@@ -97,21 +97,21 @@
         <button onclick="generarPrompt()" style="width:100%; padding:15px; font-size:1.3em;">Generar Prompt Óptimo 2026</button>
 
         <h2>Prompt listo (copia y pega):</h2>
-        <div style="display:flex; align-items:center;">
+        <div style="display:flex; align-items:center; flex-wrap:wrap; gap:12px;">
             <div id="output">Selecciona y genera...</div>
             <button id="copyBtn" onclick="copiarPrompt()" style="display:none;">Copiar</button>
         </div>
 
         <footer>
             <p>Guía: Veo en gemini.google.com · Kling en kling.ai · HeyGen para clonar voz (sube audio tuyo).</p>
-            <p>¡La v5 incluye TODO lo top de 2026!</p>
-            <p>¡Ahora instalable como app nativa en Android y Windows!</p>
+            <p>NUIKA Video Creator v5.0.1</p>
+            <p>PWA para navegadores compatibles. Genera prompts localmente; no renderiza vídeos ni conecta proveedores.</p>
         </footer>
     </div>
 
     <script>
         document.getElementById('imagen').addEventListener('change', function(e) {
-            if (e.target.files[0]) document.getElementById('preview').src = URL.createObjectURL(e.target.files[0]);
+            const p=document.getElementById('preview'); if(p.src.startsWith('blob:')) URL.revokeObjectURL(p.src); const file=e.target.files[0]; p.hidden=true; p.removeAttribute('src'); if(file && file.type.startsWith('image/') && file.size<=20000000){p.src=URL.createObjectURL(file);p.hidden=false;}else if(file){e.target.value='';document.getElementById('status').textContent='Imagen inválida o superior a 20 MB';}
         });
 
         function actualizarInfo() {
@@ -155,7 +155,7 @@
         function generarPrompt() {
             const herramienta = document.getElementById('herramienta').value;
             const tieneImagen = document.getElementById('imagen').files.length > 0;
-            const base = tieneImagen ? "Anima esta imagen:" : document.getElementById('desc').value || "escena épica";
+            const base = (tieneImagen ? "Anima la imagen de referencia. " : "") + (document.getElementById("desc").value || "escena épica");
             const duracion = document.getElementById('duracion').value;
             const camara = document.getElementById('camara').value || "dinámica fluida";
             const estilo = document.getElementById('estiloVisual').value;
@@ -184,17 +184,28 @@
 
         function copiarPrompt() {
             const texto = document.getElementById('output').textContent;
-            navigator.clipboard.writeText(texto).then(() => alert('¡Prompt copiado! Úsalo en la herramienta seleccionada.'));
+            Promise.resolve().then(()=>navigator.clipboard.writeText(texto)).then(()=>document.getElementById('status').textContent='Prompt copiado').catch(()=>document.getElementById('status').textContent='No se pudo copiar. Selecciona el texto manualmente.');
         }
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
                     .then(() => console.log('Service Worker registrado'))
-                    .catch(err => console.log('Error SW:', err));
+                    .catch(()=>document.getElementById('status').textContent='No se pudo activar el modo offline.');
             });
         }
 
+        const fields=['herramienta','desc','voz','duracion','camara','estiloVisual','tonoVoz'];
+        function saveDraft(){try{localStorage.setItem('nuika-draft',JSON.stringify(Object.fromEntries(fields.map(k=>[k,document.getElementById(k).value]))));}catch{document.getElementById('status').textContent='No se pudo guardar el borrador';}}
+        try{const d=JSON.parse(localStorage.getItem('nuika-draft')||'{}');for(const k of fields)if(typeof d[k]==='string')document.getElementById(k).value=d[k];}catch{}
+        for(const k of fields)document.getElementById(k).addEventListener('input',saveDraft);
+        document.addEventListener('click',e=>{if(e.target.closest('.examples'))saveDraft();});
+        function network(){document.getElementById('status').textContent=navigator.onLine?'Con conexión':'Sin conexión: edición local disponible';}
+        window.addEventListener('online',network);window.addEventListener('offline',network);network();
+        let installEvent;const install=document.getElementById('install');
+        window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;install.hidden=false;});
+        install.addEventListener('click',async()=>{if(!installEvent)return;try{await installEvent.prompt();await installEvent.userChoice;}catch{document.getElementById('status').textContent='Instalación no disponible';}finally{installEvent=null;install.hidden=true;}});
+        window.addEventListener('appinstalled',()=>{install.hidden=true;installEvent=null;});
         actualizarInfo();
     </script>
 </body>
